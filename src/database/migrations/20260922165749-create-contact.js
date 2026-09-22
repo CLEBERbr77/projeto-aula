@@ -1,7 +1,8 @@
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('customers', {
-      id: {
+    return queryInterface.createTable('contact', {
+       id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         autoIncrement: true,
@@ -25,10 +26,17 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
       },
+      customer_id : {
+      type: Sequelize.INTEGER,
+      refereces: { model: "customers", key: "id"},
+      onUpdate: "CASCADE",
+      onDelete: "CASCADE",
+      allowNull: false,
+      },
     });
   },
 
   down: (queryInterface) => {
-    return queryInterface.dropTable('customers');
+    return queryInterface.dropTable('contact');
   },
 };
