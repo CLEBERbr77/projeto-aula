@@ -1,5 +1,3 @@
-const { timeStamp } = require("node:console");
-
 module.exports = {
     dialect: "postgres",
     host: "localhost",
@@ -7,7 +5,7 @@ module.exports = {
     password: "1234",
     database: "aula",
     define: {
-        timeStamp: true,
+        timestamps: true,
         underscored: true,
         underscoredAll: true,
     },

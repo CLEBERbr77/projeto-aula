@@ -1,67 +1,89 @@
-let customers = [
-     {id: 1, name: "Google", site: "http://google.com"},
-     {id: 2, name: "UOL", site: "http://uol.com.br"},
-     {id: 3, name: "Microsoft", site: "http://microsoft.com"},
-     {id: 4, name: "Facebook", site: "http://facebook.com"}
- ];
+import Customer from "../models/customer";
 
- class customerscontroller {
-    // listagem dos customers
-    index(req, res) {
-        return res.json(customers);
+class CustomersController {
+  // Listar todos os clientes
+  async index(req, res) {
+    try {
+      const data = await Customer.findAll({ limit: 1000 });
+      return res.json(data);
+    } catch (err) {
+      console.error("Erro no banco (index):", err.message);
+      return res.status(500).json({ 
+        error: "Erro ao buscar registros no banco de dados.",
+        detail: err.message 
+      });
     }
-    // recupera um customer
-    show(req, res) {
-  const id = parseInt(req.params.id);
-  const customer = customers.find(item => item.id === id);
-  const status = customer ? 200 : 404;
+  }
 
-  console.warn("GET :: /customers/:id", customer, JSON.stringify(customer));
+  // Buscar apenas um cliente pelo ID
+  async show(req, res) {
+    try {
+      const { id } = req.params;
+      const customer = await Customer.findByPk(id);
 
-  return res.status(status).json(customer);
+      if (!customer) {
+        return res.status(404).json({ error: "Cliente não encontrado." });
+      }
+
+      return res.json(customer);
+    } catch (err) {
+      console.error("Erro no banco (show):", err.message);
+      return res.status(500).json({ error: "Erro interno do servidor." });
     }
-    // cria um novo customer
-    create(req, res) {
-    
-    if (!req.body || Object.keys(req.body).length === 0) {
-        return res.status(400).json({ error: "O corpo da requisição está vazio ou mal formatado!" });
+  }
+
+  // Criar um novo cliente no banco
+  async create(req, res) {
+    try {
+      const { name, site, email, status } = req.body;
+
+      if (!name) {
+        return res.status(400).json({ error: "O campo 'name' é obrigatório." });
+      }
+
+      const newCustomer = await Customer.create({ name, site, email, status });
+      return res.status(201).json(newCustomer);
+    } catch (err) {
+      console.error("Erro no banco (create):", err.message);
+      return res.status(500).json({ error: "Erro ao salvar cliente no banco de dados." });
     }
+  }
 
-    const { name, site } = req.body;
-    const id = customers[customers.length - 1].id + 1;
-    const newCustomer = { id, name, site };
-    customers.push(newCustomer);
-    
-    return res.status(201).json(newCustomer);
-        
+  // Atualizar dados de um cliente existente
+  async update(req, res) {
+    try {
+      const { id } = req.params;
+      const customer = await Customer.findByPk(id);
+
+      if (!customer) {
+        return res.status(404).json({ error: "Cliente não encontrado." });
+      }
+
+      await customer.update(req.body);
+      return res.json(customer);
+    } catch (err) {
+      console.error("Erro no banco (update):", err.message);
+      return res.status(500).json({ error: "Erro ao atualizar cliente." });
     }
-    // atualiza um customer
-    update(req, res) {
-        const id = parseInt(req.params.id);
-    const { name, site } = req.body;
-    const index = customers.findIndex(item => item.id === id);
-    const status = index >= 0 ? 200 : 404;
+  }
 
-    if (index >= 0) {
-        customers[index] = { id: parseInt(id), name, site };
+  // Remover cliente do banco
+  async destroy(req, res) {
+    try {
+      const { id } = req.params;
+      const customer = await Customer.findByPk(id);
+
+      if (!customer) {
+        return res.status(404).json({ error: "Cliente não encontrado." });
+      }
+
+      await customer.destroy();
+      return res.status(200).json({ message: "Cliente deletado com sucesso." });
+    } catch (err) {
+      console.error("Erro no banco (destroy):", err.message);
+      return res.status(500).json({ error: "Erro ao remover cliente." });
     }
-
-    return res.status(status).json(customers[index]);
-
+  }
 }
-    // exclui um customer
-    destroy (req, res) {
-        const id = parseInt(req.params.id);
-    const index = customers.findIndex(item => item.id === id);
-    const status = index >= 0 ? 200 : 404;
 
-    if (index >= 0) {
-        customers.splice(index, 1);
-    }
-
-    return res.status(status).json(index >= 0 ? { message: "Customer deleted successfully" } : { error: "Customer not found" });
-
-    }
-}
-
-module.exports = new customerscontroller();
+export default new CustomersController();

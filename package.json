@@ -1,16 +1,15 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/server.js",
   "license": "MIT",
   "description": "",
   "scripts": {
-    "dev": "nodemon index2.js",
+    "dev": "nodemon --exec sucrase-node src/server.js",
     "create-config": "sucrase-node src/config.js"
   },
   "keywords": [],
   "author": "",
-  "type": "commonjs",
   "dependencies": {
     "express": "^5.2.1",
     "pg": "^8.23.0",

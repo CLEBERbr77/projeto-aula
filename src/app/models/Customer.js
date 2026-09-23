@@ -6,16 +6,13 @@ class Customer extends Model {
       {
         name: Sequelize.STRING,
         email: Sequelize.STRING,
-        status: Sequelize.ENUM("ACTIVE", "ARCHIVED"),
       },
       {
         sequelize,
+        tableName: "customers", // 👈 Substitua pelo NOME EXATO da sua tabela no Postgres (ex: "Customer" ou "tb_customers")
+        timestamps: false,
       }
     );
-  }
-
-  static associate(models) {
-    this.hasMany(models.Contact);
   }
 }
 

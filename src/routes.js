@@ -1,6 +1,7 @@
 import { Router } from "express";
 
-const customers = require("./app/controllers/customerscontroller")
+// 1. Troque o require por import
+import customers from "./app/controllers/customerscontroller";
 
 const router = new Router();
 
